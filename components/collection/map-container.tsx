@@ -151,7 +151,7 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
         </div>
       ) : (
         <>
-          <div ref={mapRef} className="w-full h-full" />
+          <div ref={mapRef} className="w-full h-[500px]" />
 
           <div className="absolute bottom-4 right-4 space-y-2">
             <Button size="sm" variant="secondary" onClick={handleRecenter}>

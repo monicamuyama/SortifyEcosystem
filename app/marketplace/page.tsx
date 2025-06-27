@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { useWallet } from "@/hooks/use-wallet"
 import { SearchIcon, Filter, ShoppingCart } from "lucide-react"
-import Image from 'next/image'
 
 // Sample marketplace items
 const items = [
@@ -22,7 +21,7 @@ const items = [
     unit: "kg",
     type: "paper",
     seller: "0x1234...5678",
-    location: "New York",
+    location: "Kalwere",
     image: "/placeholder.svg?height=200&width=200",
   },
   {
@@ -33,7 +32,7 @@ const items = [
     unit: "kg",
     type: "plastic",
     seller: "0x8765...4321",
-    location: "Los Angeles",
+    location: "Wandegeya",
     image: "/placeholder.svg?height=200&width=200",
   },
   {
@@ -44,7 +43,7 @@ const items = [
     unit: "kg",
     type: "metal",
     seller: "0x2468...1357",
-    location: "Chicago",
+    location: "Nakaawa",
     image: "/placeholder.svg?height=200&width=200",
   },
   {
@@ -55,7 +54,7 @@ const items = [
     unit: "kg",
     type: "glass",
     seller: "0x1357...2468",
-    location: "Houston",
+    location: "Wandegeya",
     image: "/placeholder.svg?height=200&width=200",
   },
 ]
@@ -147,12 +146,10 @@ export default function MarketplacePage() {
                 {filteredItems.map((item) => (
                   <Card key={item.id} className="overflow-hidden">
                     <div className="aspect-square w-full overflow-hidden">
-                      <Image
+                      <img
                         src={item.image || "/placeholder.svg"}
                         alt={item.title}
                         className="h-full w-full object-cover transition-transform hover:scale-105"
-                        width={400}
-                        height={400}
                       />
                     </div>
                     <CardHeader className="p-4 pb-2">

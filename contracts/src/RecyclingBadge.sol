@@ -12,7 +12,6 @@ import "@openzeppelin/contracts/utils/Pausable.sol";
 import "./SortifyToken.sol";
 import "./SortifyEcosystem.sol";
 
-
 /**
  * @title RecyclingBadge
  * @dev NFT badges for recyclers as proof of recycling
@@ -58,13 +57,13 @@ contract RecyclingBadge is ERC721, ERC721URIStorage, Ownable {
         address to,
         string memory wasteType,
         uint256 quantity,
-        string memory tokenURI,
+        string memory tokenURI_,
         string memory transactionHash
     ) external onlyAuthorizedMinter returns (uint256) {
         uint256 tokenId = _nextTokenId++;
         
         _mint(to, tokenId);
-        _setTokenURI(tokenId, tokenURI);
+        _setTokenURI(tokenId, tokenURI_);
         
         badgeMetadata[tokenId] = BadgeMetadata({
             recycler: to,
@@ -91,4 +90,3 @@ contract RecyclingBadge is ERC721, ERC721URIStorage, Ownable {
         return super.supportsInterface(interfaceId);
     }
 }
-

@@ -1,5 +1,8 @@
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
 [profile.default]
+via_ir = true
+optimizer = true
+optimizer_runs = 200
 src = "src"
 out = "out"
 libs = ["lib"]
@@ -12,3 +15,12 @@ base_mainnet = "${BASE_MAINNET_RPC_URL}"
 [etherscan]
 base_sepolia = { key = "${BASESCAN_API_KEY}", url = "https://api-sepolia.basescan.org/api" }
 base = { key = "${BASESCAN_API_KEY}", url = "https://api.basescan.org/api" }
+
+
+[env]
+NEXT_PUBLIC_SORTIFY_TOKEN_ADDRESS = "${NEXT_PUBLIC_SORTIFY_TOKEN_ADDRESS}"
+NEXT_PUBLIC_RECYCLING_BADGE_ADDRESS = "${NEXT_PUBLIC_RECYCLING_BADGE_ADDRESS}"
+NEXT_PUBLIC_COLLECTOR_LOCK_ADDRESS = "${NEXT_PUBLIC_COLLECTOR_LOCK_ADDRESS}"
+NEXT_PUBLIC_RECYCLER_LOCK_ADDRESS = "${NEXT_PUBLIC_RECYCLER_LOCK_ADDRESS}"
+NEXT_PUBLIC_VERIFIER_LOCK_ADDRESS = "${NEXT_PUBLIC_VERIFIER_LOCK_ADDRESS}"
+DEPLOYER = "${DEPLOYER}"
