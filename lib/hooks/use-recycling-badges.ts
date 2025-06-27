@@ -11,65 +11,48 @@ export interface BadgeMetadata {
   transactionHash: string
 }
 
-export function useRecyclingBadges() {
+// 1. Hook for user's badge count
+export function useBadgeCount() {
   const { address } = useAccount()
 
-  // Get user's badge count
-  const { data: badgeCount, refetch: refetchBadgeCount } = useReadContract({
+  return useReadContract({
     address: RECYCLING_BADGE_ADDRESS,
     abi: RECYCLING_BADGE_ABI,
     functionName: "balanceOf",
     args: address ? [address] : undefined,
     query: { enabled: !!address },
   })
+}
 
-  // Get badge metadata by token ID
-  const getBadgeMetadata = (tokenId: bigint) => {
-    // This function should not call useReadContract directly
-    // Instead, it should return a function that calls useReadContract
-    return () => {
-      return useReadContract({
-        address: RECYCLING_BADGE_ADDRESS,
-        abi: RECYCLING_BADGE_ABI,
-        functionName: "getBadgeMetadata",
-        args: [tokenId],
-      })
-    }
-  }
+// 2. Hook for badge metadata
+export function useBadgeMetadata(tokenId: bigint) {
+  return useReadContract({
+    address: RECYCLING_BADGE_ADDRESS,
+    abi: RECYCLING_BADGE_ABI,
+    functionName: "getBadgeMetadata",
+    args: [tokenId],
+    query: { enabled: tokenId !== undefined },
+  })
+}
 
-  // Get badge token URI
-  const getBadgeTokenURI = (tokenId: bigint) => {
-    // This function should not call useReadContract directly
-    // Instead, it should return a function that calls useReadContract
-    return () => {
-      return useReadContract({
-        address: RECYCLING_BADGE_ADDRESS,
-        abi: RECYCLING_BADGE_ABI,
-        functionName: "tokenURI",
-        args: [tokenId],
-      })
-    }
-  }
+//  3. Hook for badge token URI
+export function useBadgeTokenURI(tokenId: bigint) {
+  return useReadContract({
+    address: RECYCLING_BADGE_ADDRESS,
+    abi: RECYCLING_BADGE_ABI,
+    functionName: "tokenURI",
+    args: [tokenId],
+    query: { enabled: tokenId !== undefined },
+  })
+}
 
-  // Get badge owner
-  const getBadgeOwner = (tokenId: bigint) => {
-    // This function should not call useReadContract directly
-    // Instead, it should return a function that calls useReadContract
-    return () => {
-      return useReadContract({
-        address: RECYCLING_BADGE_ADDRESS,
-        abi: RECYCLING_BADGE_ABI,
-        functionName: "ownerOf",
-        args: [tokenId],
-      })
-    }
-  }
-
-  return {
-    badgeCount,
-    getBadgeMetadata,
-    getBadgeTokenURI,
-    getBadgeOwner,
-    refetchBadgeCount,
-  }
+// 4. Hook for badge owner
+export function useBadgeOwner(tokenId: bigint) {
+  return useReadContract({
+    address: RECYCLING_BADGE_ADDRESS,
+    abi: RECYCLING_BADGE_ABI,
+    functionName: "ownerOf",
+    args: [tokenId],
+    query: { enabled: tokenId !== undefined },
+  })
 }

@@ -14,15 +14,6 @@ export function useWasteVerifier() {
     hash,
   })
 
-  const getDeposit = (depositId: number) => {
-    return useReadContract({
-      address: WASTE_VERIFIER_ADDRESS,
-      abi: WASTE_VERIFIER_ABI,
-      functionName: "deposits",
-      args: [BigInt(depositId)],
-    })
-  }
-
   const submitWasteDeposit = async (
     binId: string,
     wasteType: string,
@@ -36,7 +27,7 @@ export function useWasteVerifier() {
         address: WASTE_VERIFIER_ADDRESS,
         abi: WASTE_VERIFIER_ABI,
         functionName: "submitWasteDeposit",
-        args: [binId, wasteType, BigInt(weight * 1000), userAddress, BigInt(timestamp)], // Weight in grams
+        args: [binId, wasteType, BigInt(weight * 1000), userAddress, BigInt(timestamp)],
       })
     } finally {
       setIsSubmitting(false)
@@ -75,10 +66,22 @@ export function useWasteVerifier() {
     submitWasteDeposit,
     verifyWasteDeposit,
     claimReward,
-    getDeposit,
     isSubmitting,
     isVerifying,
     isClaiming,
     isConfirming,
   }
 }
+
+export function useDeposit(depositId: number) {
+  return useReadContract({
+    address: WASTE_VERIFIER_ADDRESS,
+    abi: WASTE_VERIFIER_ABI,
+    functionName: "deposits",
+    args: [BigInt(depositId)],
+    query: {
+      enabled: depositId !== undefined,
+    },
+  })
+}
+

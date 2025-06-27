@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, RotateCcw, Locate } from "lucide-react"
+import L, { Map as LeafletMap, Marker as LeafletMarker, LeafletMouseEvent } from "leaflet"
 
 interface MapContainerProps {
   onLocationSelect: (location: { lat: number; lng: number }) => void
@@ -10,18 +11,15 @@ interface MapContainerProps {
 
 export function MapContainer({ onLocationSelect }: MapContainerProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<L.Map | null>(null)
-  const markerRef = useRef<L.Marker | null>(null)
+  const mapInstanceRef = useRef<LeafletMap | null>(null)
+  const markerRef = useRef<LeafletMarker | null>(null)
   const [loading, setLoading] = useState(true)
   const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null)
 
   useEffect(() => {
     const loadLeaflet = async () => {
       try {
-        // Dynamically import Leaflet
-        const L = (await import("leaflet")).default
-
-        // Import Leaflet CSS
+        // Inject Leaflet CSS if not already loaded
         if (!document.querySelector('link[href*="leaflet.css"]')) {
           const link = document.createElement("link")
           link.rel = "stylesheet"
@@ -29,7 +27,7 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
           document.head.appendChild(link)
         }
 
-        // Fix for default markers
+        // Fix for default marker icon loading
         delete (L.Icon.Default.prototype as any)._getIconUrl
         L.Icon.Default.mergeOptions({
           iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/images/marker-icon-2x.png",
@@ -38,27 +36,26 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
         })
 
         if (mapRef.current && !mapInstanceRef.current) {
-          // Default location (New York)
-          const defaultLocation = { lat: 40.7128, lng: -74.006 }
+          const defaultLocation = { lat: 40.7128, lng: -74.006 } // New York
 
           // Initialize map
-          mapInstanceRef.current = L.map(mapRef.current).setView([defaultLocation.lat, defaultLocation.lng], 13)
+          const map = L.map(mapRef.current).setView([defaultLocation.lat, defaultLocation.lng], 13)
+          mapInstanceRef.current = map
 
-          // Add OpenStreetMap tiles
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "© OpenStreetMap contributors",
-          }).addTo(mapInstanceRef.current)
+          }).addTo(map)
 
-          // Add click handler
-          mapInstanceRef.current.on("click", (e: any) => {
+          // Handle map click
+          map.on("click", (e: LeafletMouseEvent) => {
             const { lat, lng } = e.latlng
-            updateMarker(L, lat, lng)
+            updateMarker(lat, lng)
             onLocationSelect({ lat, lng })
           })
 
           setLoading(false)
 
-          // Try to get user's location
+          // Try to get user location
           if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
               (position) => {
@@ -67,14 +64,13 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
                   lng: position.coords.longitude,
                 }
                 setUserLocation(userLoc)
-                mapInstanceRef.current.setView([userLoc.lat, userLoc.lng], 15)
-                updateMarker(L, userLoc.lat, userLoc.lng)
+                map.setView([userLoc.lat, userLoc.lng], 15)
+                updateMarker(userLoc.lat, userLoc.lng)
                 onLocationSelect(userLoc)
               },
               (error) => {
-                console.log("Geolocation error:", error.message)
-                // Use default location
-                updateMarker(L, defaultLocation.lat, defaultLocation.lng)
+                console.warn("Geolocation error:", error.message)
+                updateMarker(defaultLocation.lat, defaultLocation.lng)
                 onLocationSelect(defaultLocation)
               },
               {
@@ -84,7 +80,7 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
               },
             )
           } else {
-            updateMarker(L, defaultLocation.lat, defaultLocation.lng)
+            updateMarker(defaultLocation.lat, defaultLocation.lng)
             onLocationSelect(defaultLocation)
           }
         }
@@ -97,43 +93,42 @@ export function MapContainer({ onLocationSelect }: MapContainerProps) {
     loadLeaflet()
 
     return () => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove()
-        mapInstanceRef.current = null
-      }
+      mapInstanceRef.current?.remove()
+      mapInstanceRef.current = null
     }
   }, [onLocationSelect])
 
-  const updateMarker = (L: any, lat: number, lng: number) => {
+  const updateMarker = (lat: number, lng: number) => {
+    if (!mapInstanceRef.current) return
+
     if (markerRef.current) {
       markerRef.current.remove()
     }
 
-    markerRef.current = L.marker([lat, lng]).addTo(mapInstanceRef.current).bindPopup("Collection Location").openPopup()
+    markerRef.current = L.marker([lat, lng])
+      .addTo(mapInstanceRef.current)
+      .bindPopup("Collection Location")
+      .openPopup()
   }
 
   const handleMyLocation = () => {
-    if (navigator.geolocation && mapInstanceRef.current) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const userLoc = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          }
-          setUserLocation(userLoc)
-          mapInstanceRef.current.setView([userLoc.lat, userLoc.lng], 15)
+    if (!navigator.geolocation || !mapInstanceRef.current) return
 
-          // Dynamically import Leaflet for marker update
-          import("leaflet").then(({ default: L }) => {
-            updateMarker(L, userLoc.lat, userLoc.lng)
-            onLocationSelect(userLoc)
-          })
-        },
-        (error) => {
-          console.error("Error getting location:", error)
-        },
-      )
-    }
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userLoc = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        }
+        setUserLocation(userLoc)
+        mapInstanceRef.current?.setView([userLoc.lat, userLoc.lng], 15)
+        updateMarker(userLoc.lat, userLoc.lng)
+        onLocationSelect(userLoc)
+      },
+      (error) => {
+        console.error("Error getting location:", error)
+      },
+    )
   }
 
   const handleRecenter = () => {

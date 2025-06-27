@@ -10,6 +10,7 @@ import { Badge } from "@/components/ui/badge"
 import { Slider } from "@/components/ui/slider"
 import { useWallet } from "@/hooks/use-wallet"
 import { SearchIcon, Filter, ShoppingCart } from "lucide-react"
+import Image from "next/image"
 
 // Sample marketplace items
 const items = [
@@ -146,7 +147,7 @@ export default function MarketplacePage() {
                 {filteredItems.map((item) => (
                   <Card key={item.id} className="overflow-hidden">
                     <div className="aspect-square w-full overflow-hidden">
-                      <img
+                      <Image
                         src={item.image || "/placeholder.svg"}
                         alt={item.title}
                         className="h-full w-full object-cover transition-transform hover:scale-105"

@@ -27,7 +27,7 @@ const wasteTypeOptions = [
 export function EnhancedCollectionForm() {
   const router = useRouter()
   const { address, isConnected } = useAccount()
-  const { requestWasteCollection, isSubmitting, wasteTypeToString } = useSortifyEcosystem()
+  const { requestWasteCollection, isSubmitting /*, wasteTypeToString*/ } = useSortifyEcosystem()
   const { toast } = useToast()
 
   const [formData, setFormData] = useState({

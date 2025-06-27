@@ -113,7 +113,7 @@ export default function OnboardingPage() {
                   </svg>
                 </div>
                 <h3 className="font-medium text-lg">Wallet Connected!</h3>
-                <p className="text-sm text-muted-foreground">You're all set to earn recycling rewards</p>
+                <p className="text-sm text-muted-foreground">You&apos;re all set to earn recycling rewards</p>
               </div>
             ) : (
               <Button size="lg" onClick={() => connect()}>
