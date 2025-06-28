@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { Loader2, Check, X, Camera } from "lucide-react"
 import { useWallet } from "@/hooks/use-wallet"
+import type { Html5QrcodeScanner } from "html5-qrcode"
 
 interface ScanResult {
   type: string
@@ -22,7 +23,7 @@ export function QRCodeScanner() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null)
   const { toast } = useToast()
   const { isConnected } = useWallet()
-  const scannerRef = useRef<any>(null)
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null)
 
   useEffect(() => {
     if (scanning) {
@@ -46,7 +47,7 @@ export function QRCodeScanner() {
             (decodedText: string) => {
               handleScanSuccess(decodedText)
             },
-            (error: any) => {
+            (error: unknown) => {
               // Handle scan failure - we can ignore most errors as they're just failed attempts
               console.log("Scan error:", error)
             },

@@ -10,19 +10,15 @@ import { useAccount } from "wagmi"
 import { Wallet, Recycle, Award, TrendingUp, Users, Truck } from "lucide-react"
 
 export function EnhancedDashboard() {
-  const { address, isConnected } = useAccount()
+  const { isConnected } = useAccount()
   const {
     userProfile,
     userRequests,
     tokenBalance,
     formatTokenAmount,
-    getStatusString,
-    refetchProfile,
-    refetchUserRequests,
-    refetchTokenBalance,
   } = useSortifyEcosystem()
 
-  const { badgeCount } = useRecyclingBadges()
+  const { data: badgeCount } = useRecyclingBadges()
 
   if (!isConnected) {
     return (
