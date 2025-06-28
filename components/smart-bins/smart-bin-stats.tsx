@@ -148,7 +148,7 @@ export function SmartBinStats() {
                 <CardDescription>Waste collection trends over the last 6 months</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer height={300}>
+                <ChartContainer config={{}} style={{ height: 300 }}>
                   <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />

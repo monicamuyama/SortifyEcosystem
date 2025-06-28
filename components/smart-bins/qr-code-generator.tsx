@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import QRCode from "react-qr-code"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -16,7 +16,7 @@ export function QRCodeGenerator({ binId, wasteType = "mixed", estimatedWeight = 
   const [qrValue, setQrValue] = useState("")
   const [timestamp, setTimestamp] = useState(Date.now())
 
-  const generateQRValue = () => {
+  const generateQRValue = useCallback(() => {
     // Create a unique transaction ID
     const transactionId = uuidv4()
 
@@ -32,12 +32,12 @@ export function QRCodeGenerator({ binId, wasteType = "mixed", estimatedWeight = 
 
     // Convert to JSON string and encode for QR code
     setQrValue(JSON.stringify(qrData))
-  }
+  }, [binId, wasteType, estimatedWeight])
 
   // Generate a new QR code value when the component mounts or when regenerated
   useEffect(() => {
     generateQRValue()
-  }, [timestamp])
+  }, [timestamp, generateQRValue])
 
   const regenerateQR = () => {
     setTimestamp(Date.now())

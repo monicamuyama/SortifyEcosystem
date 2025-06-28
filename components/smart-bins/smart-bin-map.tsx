@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, Locate, RotateCcw } from "lucide-react"
 
@@ -42,6 +42,84 @@ export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: Smart
     { id: "SB-1008", lat: 40.7549, lng: -73.984, status: "almost-full", fillLevel: 82, location: "Rockefeller Center" },
   ]
 
+  const addSmartBinMarkers = useCallback((L: typeof import('leaflet')) => {
+    // Clear existing markers
+    markerRefs.current.forEach((marker) => marker.remove())
+    markerRefs.current = []
+
+    // Filter bins based on search criteria
+    const filteredBins = smartBins.filter((bin) => {
+      const matchesSearch =
+        !searchQuery ||
+        bin.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        bin.id.toLowerCase().includes(searchQuery.toLowerCase())
+
+      const matchesStatus = !selectedStatus || selectedStatus === "all" || bin.status === selectedStatus
+
+      return matchesSearch && matchesStatus
+    })
+
+    filteredBins.forEach((bin) => {
+      const getMarkerColor = (status: string, fillLevel: number) => {
+        if (status === "maintenance") return "#3b82f6"
+        if (status === "full" || fillLevel > 90) return "#ef4444"
+        if (status === "almost-full" || fillLevel > 70) return "#f59e0b"
+        return "#16a34a"
+      }
+
+      const color = getMarkerColor(bin.status, bin.fillLevel)
+
+      const customIcon = L.divIcon({
+        className: "smart-bin-marker",
+        html: `
+          <div style="
+            background: ${color}; 
+            width: 20px; 
+            height: 20px; 
+            border-radius: 50%; 
+            border: 2px solid white; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 10px;
+            font-weight: bold;
+          ">
+            ${bin.fillLevel}%
+          </div>
+        `,
+        iconSize: [24, 24],
+        iconAnchor: [12, 12],
+      })
+
+      const marker = L.marker([bin.lat, bin.lng], { icon: customIcon })
+        .addTo(mapInstanceRef.current!)
+        .bindPopup(`
+          <div style="font-family: system-ui, sans-serif; min-width: 200px;">
+            <h3 style="margin: 0 0 8px 0; color: #1f2937; font-size: 14px; font-weight: 600;">
+              ${bin.id}
+            </h3>
+            <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 12px;">
+              📍 ${bin.location}
+            </p>
+            <p style="margin: 0 0 4px 0; color: #6b7280; font-size: 12px;">
+              📊 Fill Level: <span style="color: ${color}; font-weight: 600;">${bin.fillLevel}%</span>
+            </p>
+            <p style="margin: 0 0 8px 0; color: #6b7280; font-size: 12px;">
+              🔄 Status: <span style="color: ${color}; font-weight: 600; text-transform: capitalize;">${bin.status.replace('-', ' ')}</span>
+            </p>
+            ${bin.status === 'available' 
+              ? '<button style="background: #16a34a; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; width: 100%;">Use This Bin</button>'
+              : '<p style="margin: 0; color: #ef4444; font-size: 11px; text-align: center;">Currently unavailable</p>'
+            }
+          </div>
+        `)
+
+      markerRefs.current.push(marker)
+    })
+  }, [smartBins, searchQuery, selectedStatus])
+
   useEffect(() => {
     const loadLeaflet = async () => {
       try {
@@ -74,7 +152,7 @@ export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: Smart
           // Add OpenStreetMap tiles
           L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
             attribution: "© OpenStreetMap contributors",
-          }).addTo(mapInstanceRef.current)
+          }).addTo(mapInstanceRef.current!)
 
           // Add smart bin markers
           addSmartBinMarkers(L)
@@ -99,7 +177,7 @@ export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: Smart
                 })
 
                 L.marker([userLoc.lat, userLoc.lng], { icon: userIcon })
-                  .addTo(mapInstanceRef.current)
+                  .addTo(mapInstanceRef.current!)
                   .bindPopup("Your Location")
               },
               (error) => {
@@ -124,60 +202,6 @@ export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: Smart
     }
   }, [addSmartBinMarkers])
 
-  const addSmartBinMarkers = (L: typeof import('leaflet')) => {
-    // Clear existing markers
-    markerRefs.current.forEach((marker) => marker.remove())
-    markerRefs.current = []
-
-    // Filter bins based on search criteria
-    const filteredBins = smartBins.filter((bin) => {
-      const matchesSearch =
-        !searchQuery ||
-        bin.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        bin.id.toLowerCase().includes(searchQuery.toLowerCase())
-
-      const matchesStatus = !selectedStatus || selectedStatus === "all" || bin.status === selectedStatus
-
-      return matchesSearch && matchesStatus
-    })
-
-    filteredBins.forEach((bin) => {
-      const getMarkerColor = (status: string, fillLevel: number) => {
-        if (status === "maintenance") return "#3b82f6"
-        if (status === "full" || fillLevel > 90) return "#ef4444"
-        if (status === "almost-full" || fillLevel > 70) return "#f59e0b"
-        return "#16a34a"
-      }
-
-      const color = getMarkerColor(bin.status, bin.fillLevel)
-
-      const binIcon = L.divIcon({
-        className: "smart-bin-marker",
-        html: `<div style="background: ${color}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 2px 4px rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;">
-                 <div style="background: white; width: 6px; height: 6px; border-radius: 50%;"></div>
-               </div>`,
-        iconSize: [20, 20],
-        iconAnchor: [10, 10],
-      })
-
-      const marker = L.marker([bin.lat, bin.lng], { icon: binIcon })
-        .addTo(mapInstanceRef.current)
-        .bindPopup(`
-          <div style="min-width: 200px;">
-            <h3 style="margin: 0 0 8px 0; font-weight: bold;">${bin.id}</h3>
-            <p style="margin: 0 0 4px 0;"><strong>Location:</strong> ${bin.location}</p>
-            <p style="margin: 0 0 4px 0;"><strong>Status:</strong> ${bin.status}</p>
-            <p style="margin: 0 0 8px 0;"><strong>Fill Level:</strong> ${bin.fillLevel}%</p>
-            <div style="background: #f3f4f6; border-radius: 4px; height: 8px; overflow: hidden;">
-              <div style="background: ${color}; height: 100%; width: ${bin.fillLevel}%;"></div>
-            </div>
-          </div>
-        `)
-
-      markerRefs.current.push(marker)
-    })
-  }
-
   // Update markers when filters change
   useEffect(() => {
     if (mapInstanceRef.current) {
@@ -195,7 +219,7 @@ export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: Smart
             lat: position.coords.latitude,
             lng: position.coords.longitude,
           }
-          mapInstanceRef.current.setView([userLoc.lat, userLoc.lng], 15)
+          mapInstanceRef.current!.setView([userLoc.lat, userLoc.lng], 15)
         },
         (error) => {
           console.error("Error getting location:", error)

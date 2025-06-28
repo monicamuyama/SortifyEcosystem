@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -296,9 +297,11 @@ function VerificationPanel({ deposit, onVerify, isVerifying }: VerificationPanel
         {deposit.imageUrl && (
           <div className="space-y-2">
             <h4 className="font-medium">Deposit Image</h4>
-            <img
+            <Image
               src={deposit.imageUrl || "/placeholder.svg"}
               alt="Waste deposit"
+              width={400}
+              height={192}
               className="w-full h-48 object-cover rounded-md border"
             />
           </div>

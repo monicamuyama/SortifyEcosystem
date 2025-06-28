@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import type { Html5QrcodeScanner } from "html5-qrcode"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -77,7 +77,7 @@ export function EnhancedQRScanner() {
     }
   }, [scanning])
 
-  const handleScanSuccess = async (decodedText: string) => {
+  const handleScanSuccess = useCallback(async (decodedText: string) => {
     try {
       const data = JSON.parse(decodedText) as ScanResult
 
@@ -111,7 +111,7 @@ export function EnhancedQRScanner() {
       })
       // Don't stop scanning on error, let user try again
     }
-  }
+  }, [toast])
 
   const stopScanning = () => {
     setScanning(false)

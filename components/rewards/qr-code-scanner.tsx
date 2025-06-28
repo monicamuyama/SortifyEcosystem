@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -73,7 +73,7 @@ export function QRCodeScanner() {
     }
   }, [scanning])
 
-  const handleScanSuccess = async (decodedText: string) => {
+  const handleScanSuccess = useCallback(async (decodedText: string) => {
     try {
       // Parse the QR code data
       const data = JSON.parse(decodedText) as ScanResult
@@ -112,7 +112,7 @@ export function QRCodeScanner() {
 
       // Don't stop scanning on error, let user try again
     }
-  }
+  }, [toast])
 
   const startScanning = () => {
     setScanning(true)
