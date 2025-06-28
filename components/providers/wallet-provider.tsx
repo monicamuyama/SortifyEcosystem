@@ -63,16 +63,26 @@ const wagmiConfig = createConfig({
 
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { address } = useAccount()
-  const { data: balanceData } = useBalance({ address })
+  const { data: balanceData } = useBalance({ 
+    address: address as `0x${string}` | undefined,
+    query: { enabled: !!address }
+  })
   const { connectAsync, connectors } = useConnect()
   const { disconnectAsync } = useDisconnect()
 
   const connect = useCallback(async () => {
     if (address) return
     try {
-      await connectAsync({ connector: connectors[0] })
+      console.log('Attempting to connect wallet...', { connectors: connectors.length })
+      if (connectors.length > 0) {
+        await connectAsync({ connector: connectors[0] })
+        console.log('Wallet connected successfully')
+      } else {
+        console.error('No connectors available')
+      }
     } catch (err) {
       console.error("Wallet connect error:", err)
+      throw err
     }
   }, [address, connectAsync, connectors])
 
@@ -81,13 +91,16 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [disconnectAsync])
 
   const ctxValue = useMemo<WalletContextType>(
-    () => ({
-      address: address ?? null,
-      balance: balanceData ? balanceData.formatted : null,
-      connect,
-      disconnect,
-      isConnected: !!address,
-    }),
+    () => {
+      console.log('WalletContext value:', { address, balance: balanceData?.formatted, isConnected: !!address })
+      return {
+        address: address ?? null,
+        balance: balanceData ? balanceData.formatted : null,
+        connect,
+        disconnect,
+        isConnected: !!address,
+      }
+    },
     [address, balanceData, connect, disconnect],
   )
 

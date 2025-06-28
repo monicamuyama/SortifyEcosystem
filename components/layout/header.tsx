@@ -30,6 +30,9 @@ export function Header() {
   const { address, disconnect, isConnected } = useWallet()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
 
+  // Debug logging
+  console.log('Header render:', { address, isConnected })
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
