@@ -1,6 +1,5 @@
 "use client"
 
-import { OnchainKitProvider } from "@coinbase/onchainkit"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { WagmiProvider, http, createConfig, useAccount, useBalance, useConnect, useDisconnect } from "wagmi"
 import { coinbaseWallet, metaMask, walletConnect } from "wagmi/connectors"
@@ -102,12 +101,7 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
 export const WalletProvider: FC<{ children: ReactNode }> = ({ children }) => (
   <WagmiProvider config={wagmiConfig}>
     <QueryClientProvider client={queryClient}>
-      <OnchainKitProvider
-        apiKey={process.env.NEXT_PUBLIC_ONCHAINKIT_API_KEY}
-        chain={baseSepolia} // dev default
-      >
-        <WalletContextProvider>{children}</WalletContextProvider>
-      </OnchainKitProvider>
+      <WalletContextProvider>{children}</WalletContextProvider>
     </QueryClientProvider>
   </WagmiProvider>
 )
