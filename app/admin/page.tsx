@@ -9,15 +9,17 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { ChevronDown, Users, Truck, BarChart3, AreaChart, Clock } from "lucide-react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
 import { RouteOptimizationMap } from "@/components/admin/route-optimization-map"
+import { SidebarProvider } from "@/components/ui/sidebar"
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("dashboard")
 
   return (
-    <div className="h-full grid grid-cols-1 md:grid-cols-[240px_1fr]">
-      <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+    <SidebarProvider>
+      <div className="h-full grid grid-cols-1 md:grid-cols-[240px_1fr]">
+        <AdminSidebar activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="p-6 overflow-auto">
+        <div className="p-6 overflow-auto">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
@@ -160,5 +162,6 @@ export default function AdminPage() {
         </Tabs>
       </div>
     </div>
+    </SidebarProvider>
   )
 }

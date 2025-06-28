@@ -148,25 +148,19 @@ export function SmartBinStats() {
                 <CardDescription>Waste collection trends over the last 6 months</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer config={{}} style={{ height: 300 }}>
+                <ChartContainer 
+                  config={{
+                    paper: { label: "Paper", color: "#3b82f6" },
+                    plastic: { label: "Plastic", color: "#16a34a" },
+                    glass: { label: "Glass", color: "#dc2626" },
+                    metal: { label: "Metal", color: "#ca8a04" }
+                  }}
+                  style={{ height: "300px" }}>
                   <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <ChartTooltip
-                      content={(props) => (
-                        <ChartTooltipContent
-                          items={[
-                            { name: "Paper", value: props.payload?.[0]?.value, color: "#3b82f6" },
-                            { name: "Plastic", value: props.payload?.[1]?.value, color: "#f59e0b" },
-                            { name: "Glass", value: props.payload?.[2]?.value, color: "#10b981" },
-                            { name: "Metal", value: props.payload?.[3]?.value, color: "#6366f1" },
-                            { name: "Organic", value: props.payload?.[4]?.value, color: "#84cc16" },
-                          ].filter((item) => item.value !== undefined)}
-                          formatter={(value) => `${value} kg`}
-                        />
-                      )}
-                    />
+                    <ChartTooltip content={<ChartTooltipContent />} />
                     <Legend />
                     <Bar dataKey="paper" fill="#3b82f6" />
                     <Bar dataKey="plastic" fill="#f59e0b" />
@@ -187,21 +181,16 @@ export function SmartBinStats() {
               <CardDescription>Average daily usage of smart bins</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer height={300}>
+              <ChartContainer 
+                config={{
+                  usage: { label: "Usage", color: "#16a34a" }
+                }}
+                style={{ height: "300px" }}>
                 <BarChart data={binUsageData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="day" />
                   <YAxis />
-                  <ChartTooltip
-                    content={(props) => (
-                      <ChartTooltipContent
-                        items={[{ name: "Usage", value: props.payload?.[0]?.value, color: "#16a34a" }].filter(
-                          (item) => item.value !== undefined,
-                        )}
-                        formatter={(value) => `${value}%`}
-                      />
-                    )}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />
                   <Bar dataKey="usage" fill="#16a34a" />
                 </BarChart>
@@ -217,21 +206,16 @@ export function SmartBinStats() {
               <CardDescription>Computer vision accuracy over time</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer height={300}>
+              <ChartContainer 
+                config={{
+                  accuracy: { label: "Accuracy", color: "#3b82f6" }
+                }}
+                style={{ height: "300px" }}>
                 <LineChart data={accuracyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis domain={[90, 100]} />
-                  <ChartTooltip
-                    content={(props) => (
-                      <ChartTooltipContent
-                        items={[{ name: "Accuracy", value: props.payload?.[0]?.value, color: "#3b82f6" }].filter(
-                          (item) => item.value !== undefined,
-                        )}
-                        formatter={(value) => `${value}%`}
-                      />
-                    )}
-                  />
+                  <ChartTooltip content={<ChartTooltipContent />} />
                   <Legend />
                   <Line type="monotone" dataKey="accuracy" stroke="#3b82f6" strokeWidth={2} activeDot={{ r: 8 }} />
                 </LineChart>

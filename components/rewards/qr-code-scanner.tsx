@@ -25,6 +25,47 @@ export function QRCodeScanner() {
   const { isConnected } = useWallet()
   const scannerRef = useRef<Html5QrcodeScanner | null>(null)
 
+  const handleScanSuccess = useCallback(async (decodedText: string) => {
+    try {
+      // Parse the QR code data
+      const data = JSON.parse(decodedText) as ScanResult
+
+      // Validate that this is a Sortify reward QR code
+      if (data.type !== "sortify-reward") {
+        throw new Error("Invalid QR code. Not a Sortify reward.")
+      }
+
+      // Check if the QR code is expired (24 hours)
+      const now = Date.now()
+      if (now - data.timestamp > 24 * 60 * 60 * 1000) {
+        throw new Error("QR code has expired. Please generate a new one.")
+      }
+
+      // Store the scan result and stop scanning
+      setScanResult(data)
+      setScanning(false)
+
+      // Clear the scanner
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(console.error)
+      }
+
+      toast({
+        title: "QR Code Scanned Successfully!",
+        description: "Review the details and claim your reward.",
+        variant: "default",
+      })
+    } catch (error) {
+      toast({
+        title: "Invalid QR Code",
+        description: error instanceof Error ? error.message : "Could not process QR code",
+        variant: "destructive",
+      })
+
+      // Don't stop scanning on error, let user try again
+    }
+  }, [toast])
+
   useEffect(() => {
     if (scanning) {
       // Dynamically import the QR code scanner only when needed on the client side
@@ -71,48 +112,7 @@ export function QRCodeScanner() {
         scannerRef.current.clear().catch(console.error)
       }
     }
-  }, [scanning])
-
-  const handleScanSuccess = useCallback(async (decodedText: string) => {
-    try {
-      // Parse the QR code data
-      const data = JSON.parse(decodedText) as ScanResult
-
-      // Validate that this is a Sortify reward QR code
-      if (data.type !== "sortify-reward") {
-        throw new Error("Invalid QR code. Not a Sortify reward.")
-      }
-
-      // Check if the QR code is expired (24 hours)
-      const now = Date.now()
-      if (now - data.timestamp > 24 * 60 * 60 * 1000) {
-        throw new Error("QR code has expired. Please generate a new one.")
-      }
-
-      // Store the scan result and stop scanning
-      setScanResult(data)
-      setScanning(false)
-
-      // Clear the scanner
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error)
-      }
-
-      toast({
-        title: "QR Code Scanned Successfully!",
-        description: "Review the details and claim your reward.",
-        variant: "default",
-      })
-    } catch (error) {
-      toast({
-        title: "Invalid QR Code",
-        description: error instanceof Error ? error.message : "Could not process QR code",
-        variant: "destructive",
-      })
-
-      // Don't stop scanning on error, let user try again
-    }
-  }, [toast])
+  }, [scanning, handleScanSuccess, toast])
 
   const startScanning = () => {
     setScanning(true)

@@ -96,23 +96,23 @@ export function useContracts() {
   const isBaseSepolia = chain?.id === 84532
   const contractAddresses = isBaseSepolia ? CONTRACTS.BASE_SEPOLIA : CONTRACTS.BASE_MAINNET
 
-  const sortifyToken = getContract({
+  const sortifyToken = publicClient ? getContract({
     address: contractAddresses.SORTIFY_TOKEN as `0x${string}`,
     abi: SORTIFY_TOKEN_ABI,
     client: { public: publicClient, wallet: walletClient },
-  })
+  }) : null
 
-  const wasteCollection = getContract({
+  const wasteCollection = publicClient ? getContract({
     address: contractAddresses.WASTE_COLLECTION as `0x${string}`,
     abi: WASTE_COLLECTION_ABI,
     client: { public: publicClient, wallet: walletClient },
-  })
+  }) : null
 
-  const marketplace = getContract({
+  const marketplace = publicClient ? getContract({
     address: contractAddresses.MARKETPLACE as `0x${string}`,
     abi: MARKETPLACE_ABI,
     client: { public: publicClient, wallet: walletClient },
-  })
+  }) : null
 
   return {
     sortifyToken,

@@ -25,7 +25,7 @@ export function useUnlockAccess() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           address: userAddress,
-          lockAddress: UNLOCK_CONFIG.locks.verifierAccess,
+          lockAddress: UNLOCK_CONFIG.lockAddress,
         }),
       })
 
@@ -48,7 +48,7 @@ export function useUnlockAccess() {
       const checkoutUrl = `https://app.unlock-protocol.com/checkout?paywallConfig=${encodeURIComponent(
         JSON.stringify({
           locks: {
-            [UNLOCK_CONFIG.locks.verifierAccess]: {
+            [UNLOCK_CONFIG.lockAddress]: {
               name: "Sortify Verifier Access",
               network: 8453, // Base mainnet
             },

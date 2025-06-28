@@ -1,6 +1,7 @@
 import '@coinbase/onchainkit/styles.css';
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter } from "next/font/google";
+import { Suspense } from 'react';
 import './globals.css';
 //import { Providers } from './providers';
 import { WalletProvider } from "@/components/providers/wallet-provider"
@@ -17,8 +18,6 @@ export const metadata: Metadata = {
   title: "Sortify | Smart Waste Management",
   description: "Reward-based waste management platform using blockchain technology",
   manifest: "/manifest.json",
-  themeColor: "#16a34a",
-  viewport: "width=device-width, initial-scale=1, maximum-scale=1",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -33,6 +32,13 @@ export const metadata: Metadata = {
     siteName: "Sortify",
   },
   generator: "v0.dev",
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  themeColor: '#16a34a',
 }
 
 export default function RootLayout({
@@ -50,7 +56,9 @@ export default function RootLayout({
               <main className="flex-1">{children}</main>
               <Footer />
             </div>
-            <Analytics />
+            <Suspense fallback={null}>
+              <Analytics />
+            </Suspense>
             <RegisterSW />
             <Toaster />
           </NotificationsProvider>

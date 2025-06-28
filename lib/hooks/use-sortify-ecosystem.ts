@@ -91,7 +91,7 @@ export function useSortifyEcosystem() {
     address: SORTIFY_ECOSYSTEM_ADDRESS,
     abi: SORTIFY_ECOSYSTEM_ABI,
     functionName: "getAvailableRequests",
-    args: [0n, 50n], // offset: 0, limit: 50
+    args: [BigInt(0), BigInt(50)], // offset: 0, limit: 50
   })
 
   // Read SORT token balance
@@ -118,7 +118,10 @@ export function useSortifyEcosystem() {
         abi: SORTIFY_ECOSYSTEM_ABI,
         functionName: "requestWasteCollection",
         args: [
-          wasteItems,
+          wasteItems.map(item => ({
+            wasteType: Number(item.wasteType),
+            amount: item.amount
+          })),
           location,
           BigInt(Math.round(latitude * 1000000)), // Convert to fixed point
           BigInt(Math.round(longitude * 1000000)),
@@ -241,7 +244,7 @@ export function useSortifyEcosystem() {
     address: SORTIFY_ECOSYSTEM_ADDRESS,
     abi: SORTIFY_ECOSYSTEM_ABI,
     functionName: "getCollectionRequest",
-    args: address ? [0n] : undefined, // Placeholder for requestId
+    args: address ? [BigInt(0)] : undefined, // Placeholder for requestId
     query: { enabled: !!address },
   })
 

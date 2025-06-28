@@ -1,3 +1,5 @@
+//export const WASTE_VERIFIER_ADDRESS = (process.env.NEXT_PUBLIC_WASTE_VERIFIER_ADDRESS || '0x0000000000000000000000000000000000000000') as `0x${string}`
+export const WASTE_VERIFIER_ADDRESS = process.env.NEXT_PUBLIC_WASTE_VERIFIER_ADDRESS as `0x${string}`
 export const WASTE_VERIFIER_ABI = [
     {
       inputs: [

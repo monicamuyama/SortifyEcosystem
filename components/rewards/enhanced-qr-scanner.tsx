@@ -29,6 +29,42 @@ export function EnhancedQRScanner() {
   const { submitWasteDeposit, isSubmitting } = useWasteVerifier()
   const scannerRef = useRef<Html5QrcodeScanner | null>(null)
 
+  const handleScanSuccess = useCallback(async (decodedText: string) => {
+    try {
+      const data = JSON.parse(decodedText) as ScanResult
+
+      if (data.type !== "sortify-reward") {
+        throw new Error("Invalid QR code. Not a Sortify reward.")
+      }
+
+      const now = Date.now()
+      if (now - data.timestamp > 24 * 60 * 60 * 1000) {
+        throw new Error("QR code has expired. Please generate a new one.")
+      }
+
+      setScanResult(data)
+      setScanning(false)
+
+      // Clear the scanner
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(console.error)
+      }
+
+      toast({
+        title: "QR Code Scanned Successfully!",
+        description: "Review the details and submit your deposit.",
+        variant: "default",
+      })
+    } catch (error) {
+      toast({
+        title: "Invalid QR Code",
+        description: error instanceof Error ? error.message : "Could not process QR code",
+        variant: "destructive",
+      })
+      // Don't stop scanning on error, let user try again
+    }
+  }, [toast])
+
   useEffect(() => {
     if (scanning) {
       // Dynamically import the QR code scanner only when needed on the client side
@@ -75,43 +111,7 @@ export function EnhancedQRScanner() {
         scannerRef.current.clear().catch(console.error)
       }
     }
-  }, [scanning])
-
-  const handleScanSuccess = useCallback(async (decodedText: string) => {
-    try {
-      const data = JSON.parse(decodedText) as ScanResult
-
-      if (data.type !== "sortify-reward") {
-        throw new Error("Invalid QR code. Not a Sortify reward.")
-      }
-
-      const now = Date.now()
-      if (now - data.timestamp > 24 * 60 * 60 * 1000) {
-        throw new Error("QR code has expired. Please generate a new one.")
-      }
-
-      setScanResult(data)
-      setScanning(false)
-
-      // Clear the scanner
-      if (scannerRef.current) {
-        scannerRef.current.clear().catch(console.error)
-      }
-
-      toast({
-        title: "QR Code Scanned Successfully!",
-        description: "Review the details and submit your deposit.",
-        variant: "default",
-      })
-    } catch (error) {
-      toast({
-        title: "Invalid QR Code",
-        description: error instanceof Error ? error.message : "Could not process QR code",
-        variant: "destructive",
-      })
-      // Don't stop scanning on error, let user try again
-    }
-  }, [toast])
+  }, [scanning, handleScanSuccess, toast])
 
   const stopScanning = () => {
     setScanning(false)

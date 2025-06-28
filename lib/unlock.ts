@@ -1,6 +1,7 @@
 import { createPublicClient, http } from "viem"
 import { base, baseSepolia } from "viem/chains"
 
+
 // Unlock Protocol addresses on Base
 export const UNLOCK_ADDRESSES = {
   [base.id]: {
@@ -62,7 +63,7 @@ export interface MembershipStatus {
 
 export class UnlockService {
   private publicClient
-  private walletClient
+  //private walletClient
   private chainId: number
 
   constructor(chainId: number = baseSepolia.id) {

@@ -11,7 +11,7 @@ export function useMembership() {
   const [error, setError] = useState<string | null>(null)
 
   const unlockService = new UnlockService()
-  const membershipContractAddress = process.env.NEXT_PUBLIC_MEMBERSHIP_CONTRACT_ADDRESS
+  const membershipContractAddress = process.env.NEXT_PUBLIC_MEMBERSHIP_CONTRACT_ADDRESS as `0x${string}` | undefined
 
   useEffect(() => {
     if (address && membershipContractAddress) {
@@ -44,9 +44,9 @@ export function useMembership() {
     try {
       // Get lock addresses from environment or contract
       const lockAddresses = {
-        basic: process.env.NEXT_PUBLIC_BASIC_LOCK_ADDRESS,
-        premium: process.env.NEXT_PUBLIC_PREMIUM_LOCK_ADDRESS,
-        enterprise: process.env.NEXT_PUBLIC_ENTERPRISE_LOCK_ADDRESS,
+        basic: process.env.NEXT_PUBLIC_BASIC_LOCK_ADDRESS as `0x${string}` | undefined,
+        premium: process.env.NEXT_PUBLIC_PREMIUM_LOCK_ADDRESS as `0x${string}` | undefined,
+        enterprise: process.env.NEXT_PUBLIC_ENTERPRISE_LOCK_ADDRESS as `0x${string}` | undefined,
       }
 
       const lockAddress = lockAddresses[tier]

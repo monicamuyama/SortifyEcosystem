@@ -9,7 +9,15 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { DatePicker } from "@/components/collection/date-picker"
-import { MapContainer } from "@/components/collection/map-container"
+import dynamic from 'next/dynamic'
+
+const MapContainer = dynamic(
+  () => import('@/components/collection/map-container').then(mod => ({ default: mod.MapContainer })),
+  { 
+    ssr: false,
+    loading: () => <div className="h-64 bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading map...</div>
+  }
+)
 import { useSortifyEcosystem, WasteType, type WasteItem } from "@/lib/hooks/use-sortify-ecosystem"
 import { useToast } from "@/components/ui/use-toast"
 import { Calendar, MapPin, X, Plus, Loader2 } from "lucide-react"

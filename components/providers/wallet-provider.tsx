@@ -31,7 +31,13 @@ export const WalletContext = createContext<WalletContextType>({
 /*  wagmi / onchainkit base config                                    */
 /* ------------------------------------------------------------------ */
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 60 * 1000,
+    },
+  },
+})
 
 const wagmiConfig = createConfig({
   chains: [base, baseSepolia],
@@ -49,6 +55,7 @@ const wagmiConfig = createConfig({
     [base.id]: http(),
     [baseSepolia.id]: http(),
   },
+  ssr: true,
 })
 
 /* ------------------------------------------------------------------ */
