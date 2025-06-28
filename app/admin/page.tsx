@@ -23,7 +23,7 @@ export default function AdminPage() {
             <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
             {/* Add more tabs here as needed */}
           </TabsList>
-          <TabsContent value="dashboard" className="space-y-6" active={activeTab === "dashboard"}>
+          <TabsContent value="dashboard" className="space-y-6">
             <div className="flex items-center justify-between">
               <h2 className="text-3xl font-bold tracking-tight">Admin Dashboard</h2>
               <div className="flex items-center gap-2">

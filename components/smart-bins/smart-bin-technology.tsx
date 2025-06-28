@@ -9,7 +9,7 @@ export function SmartBinTechnology() {
       <div className="text-center max-w-3xl mx-auto">
         <h2 className="text-3xl font-bold tracking-tight mb-4">Our Smart Bin Technology</h2>
         <p className="text-muted-foreground">
-          Sortify's smart bins use advanced computer vision and machine learning to automatically sort and categorize
+          Sortify&apos;s smart bins use advanced computer vision and machine learning to automatically sort and categorize
           waste, making recycling easier and more efficient than ever before.
         </p>
       </div>

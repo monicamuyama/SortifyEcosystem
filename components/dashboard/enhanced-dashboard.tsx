@@ -16,6 +16,13 @@ export function EnhancedDashboard() {
     userRequests,
     tokenBalance,
     formatTokenAmount,
+<<<<<<< HEAD
+=======
+    // getStatusString,
+    // refetchProfile,
+    // refetchUserRequests,
+    // refetchTokenBalance,
+>>>>>>> ebc4762 (Fixed deployment issues caused as reult of the smart bin modeules)
   } = useSortifyEcosystem()
 
   const { data: badgeCount } = useRecyclingBadges()
@@ -251,30 +258,14 @@ export function EnhancedDashboard() {
 }
 
 function CollectionRequestCard({ requestId }: { requestId: bigint }) {
-  const { getCollectionRequest, getStatusString, formatTokenAmount } = useSortifyEcosystem()
-  const { data: request } = getCollectionRequest(requestId)
-
-  if (!request) {
-    return (
-      <div className="border rounded-lg p-4">
-        <p className="text-sm text-muted-foreground">Loading request #{requestId.toString()}...</p>
-      </div>
-    )
-  }
-
+  // const { collectionRequestDetails, formatTokenAmount } = useSortifyEcosystem()
+  // We'll need to implement a way to get individual request details
+  // For now, let's show a placeholder
+  
   return (
     <div className="border rounded-lg p-4">
-      <div className="flex justify-between items-start mb-2">
-        <h3 className="font-medium">Request #{request.id.toString()}</h3>
-        <Badge variant={request.status === 3 ? "default" : "outline"}>{getStatusString(request.status)}</Badge>
-      </div>
-      <p className="text-sm text-muted-foreground mb-2">{request.location}</p>
-      <div className="flex justify-between items-center">
-        <span className="text-sm">
-          {request.wasteItems.length} waste item{request.wasteItems.length !== 1 ? "s" : ""}
-        </span>
-        <span className="text-sm font-medium">{formatTokenAmount(request.pendingReward)} SORT</span>
-      </div>
+      <p className="text-sm text-muted-foreground">Request #{requestId.toString()}</p>
+      <p className="text-xs text-muted-foreground">Loading request details...</p>
     </div>
   )
 }

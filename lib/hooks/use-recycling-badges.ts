@@ -56,3 +56,21 @@ export function useBadgeOwner(tokenId: bigint) {
     query: { enabled: tokenId !== undefined },
   })
 }
+
+// 5. Combined hook for recycling badges (main hook used by dashboard)
+export function useRecyclingBadges() {
+  const { address } = useAccount()
+  
+  const { data: badgeCount, ...badgeCountRest } = useReadContract({
+    address: RECYCLING_BADGE_ADDRESS,
+    abi: RECYCLING_BADGE_ABI,
+    functionName: "balanceOf",
+    args: address ? [address] : undefined,
+    query: { enabled: !!address },
+  })
+
+  return {
+    badgeCount,
+    ...badgeCountRest
+  }
+}

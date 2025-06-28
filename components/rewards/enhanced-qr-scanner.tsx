@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { QrReader } from "react-qr-reader"
+import { Html5QrcodeScanner } from "html5-qrcode"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"

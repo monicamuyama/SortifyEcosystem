@@ -57,7 +57,7 @@ const wagmiConfig = createConfig({
 
 const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const { address } = useAccount()
-  const { data: balanceData } = useBalance({ address, watch: true })
+  const { data: balanceData } = useBalance({ address })
   const { connectAsync, connectors } = useConnect()
   const { disconnectAsync } = useDisconnect()
 

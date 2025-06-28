@@ -1,7 +1,7 @@
 "use client"
 
 import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 
 const data = [
   { month: "Jan", tokens: 50 },
@@ -14,7 +14,7 @@ const data = [
 
 export function RewardsMetricsChart() {
   return (
-    <ChartContainer height={350}>
+    <ChartContainer config={{}} style={{ height: 350 }}>
       <LineChart
         data={data}
         margin={{
@@ -27,15 +27,7 @@ export function RewardsMetricsChart() {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
         <YAxis />
-        <ChartTooltip
-          content={(props) => (
-            <ChartTooltipContent
-              items={[{ name: "Tokens Earned", value: props.payload?.[0]?.value, color: "#16a34a" }].filter(
-                (item) => item.value !== undefined,
-              )}
-            />
-          )}
-        />
+        <ChartTooltip />
         <Line type="monotone" dataKey="tokens" stroke="#16a34a" strokeWidth={2} activeDot={{ r: 6 }} />
       </LineChart>
     </ChartContainer>

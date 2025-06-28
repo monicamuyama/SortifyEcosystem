@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 
 export default function RewardRatesPage() {
   // Reward rates for different waste types
@@ -112,21 +112,12 @@ export default function RewardRatesPage() {
               <CardDescription>Visual comparison of reward rates by waste type</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer height={400}>
+              <ChartContainer config={{}} style={{ height: 400 }}>
                 <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 70 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" angle={-45} textAnchor="end" height={70} tick={{ dy: 10 }} />
                   <YAxis label={{ value: "SORT/kg", angle: -90, position: "insideLeft" }} />
-                  <ChartTooltip
-                    content={(props) => (
-                      <ChartTooltipContent
-                        items={[{ name: "Rate", value: props.payload?.[0]?.value, color: "#16a34a" }].filter(
-                          (item) => item.value !== undefined,
-                        )}
-                        formatter={(value) => `${value} SORT/kg`}
-                      />
-                    )}
-                  />
+                  <ChartTooltip />
                   <Bar dataKey="rate" fill="#16a34a" />
                 </BarChart>
               </ChartContainer>

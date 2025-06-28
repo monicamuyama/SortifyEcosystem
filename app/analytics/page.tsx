@@ -18,7 +18,7 @@ import {
   Pie,
   Cell,
 } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 import { Download, CalendarRange } from "lucide-react"
 
 // Sample data for charts
@@ -157,24 +157,12 @@ export default function AnalyticsPage() {
                 <CardDescription>Breakdown by waste type over the last year</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer height={350}>
+                <ChartContainer config={{}} style={{ height: 350 }}>
                   <BarChart data={monthlyData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                     <CartesianGrid strokeDasharray="3 3" />
                     <XAxis dataKey="month" />
                     <YAxis />
-                    <ChartTooltip
-                      content={(props) => (
-                        <ChartTooltipContent
-                          items={[
-                            { name: "Recyclable", value: props.payload?.[0]?.value, color: "#16a34a" },
-                            { name: "Organic", value: props.payload?.[1]?.value, color: "#84cc16" },
-                            { name: "Electronic", value: props.payload?.[2]?.value, color: "#3b82f6" },
-                            { name: "Hazardous", value: props.payload?.[3]?.value, color: "#ef4444" },
-                          ].filter((item) => item.value !== undefined)}
-                          formatter={(value) => `${value} kg`}
-                        />
-                      )}
-                    />
+                    <ChartTooltip />
                     <Legend />
                     <Bar dataKey="recyclable" stackId="a" fill="#16a34a" />
                     <Bar dataKey="organic" stackId="a" fill="#84cc16" />
@@ -191,7 +179,7 @@ export default function AnalyticsPage() {
                 <CardDescription>Breakdown of waste by category</CardDescription>
               </CardHeader>
               <CardContent>
-                <ChartContainer height={350}>
+                <ChartContainer config={{}} style={{ height: 350 }}>
                   <PieChart>
                     <Pie
                       data={wasteTypeData}
@@ -262,22 +250,13 @@ export default function AnalyticsPage() {
               <CardDescription>Monthly token issuance and transactions</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer height={350}>
+              <ChartContainer config={{}} style={{ height: 350 }}>
                 <LineChart data={tokenData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis yAxisId="left" />
                   <YAxis yAxisId="right" orientation="right" />
-                  <ChartTooltip
-                    content={(props) => (
-                      <ChartTooltipContent
-                        items={[
-                          { name: "Tokens Issued", value: props.payload?.[0]?.value, color: "#16a34a" },
-                          { name: "Transactions", value: props.payload?.[1]?.value, color: "#3b82f6" },
-                        ].filter((item) => item.value !== undefined)}
-                      />
-                    )}
-                  />
+                  <ChartTooltip />
                   <Legend />
                   <Line
                     yAxisId="left"
@@ -339,21 +318,12 @@ export default function AnalyticsPage() {
               <CardDescription>Monthly new users and active user count</CardDescription>
             </CardHeader>
             <CardContent>
-              <ChartContainer height={350}>
+              <ChartContainer config={{}} style={{ height: 350 }}>
                 <LineChart data={userActivityData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="month" />
                   <YAxis />
-                  <ChartTooltip
-                    content={(props) => (
-                      <ChartTooltipContent
-                        items={[
-                          { name: "New Users", value: props.payload?.[0]?.value, color: "#3b82f6" },
-                          { name: "Active Users", value: props.payload?.[1]?.value, color: "#16a34a" },
-                        ].filter((item) => item.value !== undefined)}
-                      />
-                    )}
-                  />
+                  <ChartTooltip />
                   <Legend />
                   <Line type="monotone" dataKey="newUsers" stroke="#3b82f6" strokeWidth={2} name="New Users" />
                   <Line type="monotone" dataKey="activeUsers" stroke="#16a34a" strokeWidth={2} name="Active Users" />

@@ -1,7 +1,7 @@
 "use client"
 
 import { XAxis, YAxis, CartesianGrid, Legend, BarChart, Bar } from "recharts"
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltip } from "@/components/ui/chart"
 
 const data = [
   { month: "Jan", recyclable: 25, organic: 18, electronic: 5, hazardous: 3 },
@@ -14,7 +14,7 @@ const data = [
 
 export function WasteMetricsChart() {
   return (
-    <ChartContainer height={350}>
+    <ChartContainer config={{}} style={{ height: 350 }}>
       <BarChart
         data={data}
         margin={{
@@ -27,19 +27,7 @@ export function WasteMetricsChart() {
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="month" />
         <YAxis />
-        <ChartTooltip
-          content={(props) => (
-            <ChartTooltipContent
-              items={[
-                { name: "Recyclable", value: props.payload?.[0]?.value, color: "#16a34a" },
-                { name: "Organic", value: props.payload?.[1]?.value, color: "#84cc16" },
-                { name: "Electronic", value: props.payload?.[2]?.value, color: "#3b82f6" },
-                { name: "Hazardous", value: props.payload?.[3]?.value, color: "#ef4444" },
-              ].filter((item) => item.value !== undefined)}
-              formatter={(value) => `${value} kg`}
-            />
-          )}
-        />
+        <ChartTooltip />
         <Legend />
         <Bar dataKey="recyclable" stackId="a" fill="#16a34a" />
         <Bar dataKey="organic" stackId="a" fill="#84cc16" />
