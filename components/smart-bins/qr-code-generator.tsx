@@ -16,11 +16,6 @@ export function QRCodeGenerator({ binId, wasteType = "mixed", estimatedWeight = 
   const [qrValue, setQrValue] = useState("")
   const [timestamp, setTimestamp] = useState(Date.now())
 
-  // Generate a new QR code value when the component mounts or when regenerated
-  useEffect(() => {
-    generateQRValue()
-  }, [timestamp, generateQRValue])
-
   const generateQRValue = () => {
     // Create a unique transaction ID
     const transactionId = uuidv4()
@@ -38,6 +33,11 @@ export function QRCodeGenerator({ binId, wasteType = "mixed", estimatedWeight = 
     // Convert to JSON string and encode for QR code
     setQrValue(JSON.stringify(qrData))
   }
+
+  // Generate a new QR code value when the component mounts or when regenerated
+  useEffect(() => {
+    generateQRValue()
+  }, [timestamp])
 
   const regenerateQR = () => {
     setTimestamp(Date.now())

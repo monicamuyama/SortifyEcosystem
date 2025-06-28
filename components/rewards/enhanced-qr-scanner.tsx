@@ -2,8 +2,8 @@
 
 import type React from "react"
 
-import { useState } from "react"
-import { Html5QrcodeScanner } from "html5-qrcode"
+import { useState, useEffect, useRef } from "react"
+import type { Html5QrcodeScanner } from "html5-qrcode"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -27,31 +27,96 @@ export function EnhancedQRScanner() {
   const { toast } = useToast()
   const { address, isConnected } = useOnchainWallet()
   const { submitWasteDeposit, isSubmitting } = useWasteVerifier()
+  const scannerRef = useRef<Html5QrcodeScanner | null>(null)
 
-  const handleScan = async (result: { text: string } | null) => {
-    if (result && result.text) {
-      try {
-        const data = JSON.parse(result.text) as ScanResult
+  useEffect(() => {
+    if (scanning) {
+      // Dynamically import the QR code scanner only when needed on the client side
+      const initializeScanner = async () => {
+        try {
+          const { Html5QrcodeScanner } = await import("html5-qrcode")
+          
+          const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            showTorchButtonIfSupported: true,
+            showZoomSliderIfSupported: true,
+            defaultZoomValueIfSupported: 2,
+          }
 
-        if (data.type !== "sortify-reward") {
-          throw new Error("Invalid QR code. Not a Sortify reward.")
+          scannerRef.current = new Html5QrcodeScanner("qr-reader", config, false)
+
+          scannerRef.current.render(
+            (decodedText: string) => {
+              handleScanSuccess(decodedText)
+            },
+            (error: unknown) => {
+              // Handle scan failure - we can ignore most errors as they're just failed attempts
+              console.log("Scan error:", error)
+            },
+          )
+        } catch (error) {
+          console.error("Failed to initialize QR scanner:", error)
+          toast({
+            title: "Scanner Error",
+            description: "Failed to initialize camera scanner",
+            variant: "destructive",
+          })
+          setScanning(false)
         }
-
-        const now = Date.now()
-        if (now - data.timestamp > 24 * 60 * 60 * 1000) {
-          throw new Error("QR code has expired. Please generate a new one.")
-        }
-
-        setScanResult(data)
-        setScanning(false)
-      } catch (error) {
-        toast({
-          title: "Invalid QR Code",
-          description: error instanceof Error ? error.message : "Could not process QR code",
-          variant: "destructive",
-        })
-        setScanning(false)
       }
+
+      initializeScanner()
+    }
+
+    return () => {
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(console.error)
+      }
+    }
+  }, [scanning])
+
+  const handleScanSuccess = async (decodedText: string) => {
+    try {
+      const data = JSON.parse(decodedText) as ScanResult
+
+      if (data.type !== "sortify-reward") {
+        throw new Error("Invalid QR code. Not a Sortify reward.")
+      }
+
+      const now = Date.now()
+      if (now - data.timestamp > 24 * 60 * 60 * 1000) {
+        throw new Error("QR code has expired. Please generate a new one.")
+      }
+
+      setScanResult(data)
+      setScanning(false)
+
+      // Clear the scanner
+      if (scannerRef.current) {
+        scannerRef.current.clear().catch(console.error)
+      }
+
+      toast({
+        title: "QR Code Scanned Successfully!",
+        description: "Review the details and submit your deposit.",
+        variant: "default",
+      })
+    } catch (error) {
+      toast({
+        title: "Invalid QR Code",
+        description: error instanceof Error ? error.message : "Could not process QR code",
+        variant: "destructive",
+      })
+      // Don't stop scanning on error, let user try again
+    }
+  }
+
+  const stopScanning = () => {
+    setScanning(false)
+    if (scannerRef.current) {
+      scannerRef.current.clear().catch(console.error)
     }
   }
 
@@ -145,14 +210,11 @@ export function EnhancedQRScanner() {
       </CardHeader>
       <CardContent>
         {scanning ? (
-          <div className="overflow-hidden rounded-lg">
-            <QrReader
-              constraints={{ facingMode: "environment" }}
-              onResult={handleScan}
-              scanDelay={500}
-              videoStyle={{ width: "100%", height: "100%" }}
-              videoContainerStyle={{ width: "100%", height: "300px" }}
-            />
+          <div className="space-y-4">
+            <div id="qr-reader" className="w-full"></div>
+            <div className="text-center text-sm text-muted-foreground">
+              <p>Position the QR code within the frame to scan</p>
+            </div>
           </div>
         ) : scanResult ? (
           <div className="space-y-4">
@@ -213,18 +275,22 @@ export function EnhancedQRScanner() {
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center space-y-4 py-8">
+            <Camera className="h-12 w-12 text-muted-foreground" />
             <div className="text-center text-muted-foreground">
               <p>Press the button below to start scanning</p>
             </div>
-            <Button onClick={() => setScanning(true)}>Start Scanning</Button>
+            <Button onClick={() => setScanning(true)}>
+              <Camera className="mr-2 h-4 w-4" />
+              Start Scanning
+            </Button>
           </div>
         )}
       </CardContent>
       {scanning && (
         <CardFooter>
-          <Button variant="outline" className="w-full" onClick={() => setScanning(false)}>
+          <Button variant="outline" className="w-full" onClick={stopScanning}>
             <X className="mr-2 h-4 w-4" />
-            Cancel Scanning
+            Stop Scanning
           </Button>
         </CardFooter>
       )}

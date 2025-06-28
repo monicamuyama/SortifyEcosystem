@@ -16,16 +16,13 @@ export function EnhancedDashboard() {
     userRequests,
     tokenBalance,
     formatTokenAmount,
-<<<<<<< HEAD
-=======
     // getStatusString,
     // refetchProfile,
     // refetchUserRequests,
     // refetchTokenBalance,
->>>>>>> ebc4762 (Fixed deployment issues caused as reult of the smart bin modeules)
   } = useSortifyEcosystem()
 
-  const { data: badgeCount } = useRecyclingBadges()
+  const { badgeCount } = useRecyclingBadges()
 
   if (!isConnected) {
     return (
