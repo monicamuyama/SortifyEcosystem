@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import { Html5QrcodeScanner } from "html5-qrcode"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
@@ -23,30 +22,47 @@ export function QRCodeScanner() {
   const [scanResult, setScanResult] = useState<ScanResult | null>(null)
   const { toast } = useToast()
   const { isConnected } = useWallet()
-  const scannerRef = useRef<Html5QrcodeScanner | null>(null)
+  const scannerRef = useRef<any>(null)
 
   useEffect(() => {
     if (scanning) {
-      const config = {
-        fps: 10,
-        qrbox: { width: 250, height: 250 },
-        aspectRatio: 1.0,
-        showTorchButtonIfSupported: true,
-        showZoomSliderIfSupported: true,
-        defaultZoomValueIfSupported: 2,
+      // Dynamically import the QR code scanner only when needed on the client side
+      const initializeScanner = async () => {
+        try {
+          const { Html5QrcodeScanner } = await import("html5-qrcode")
+          
+          const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+            showTorchButtonIfSupported: true,
+            showZoomSliderIfSupported: true,
+            defaultZoomValueIfSupported: 2,
+          }
+
+          scannerRef.current = new Html5QrcodeScanner("qr-reader", config, false)
+
+          scannerRef.current.render(
+            (decodedText: string) => {
+              handleScanSuccess(decodedText)
+            },
+            (error: any) => {
+              // Handle scan failure - we can ignore most errors as they're just failed attempts
+              console.log("Scan error:", error)
+            },
+          )
+        } catch (error) {
+          console.error("Failed to initialize QR scanner:", error)
+          toast({
+            title: "Scanner Error",
+            description: "Failed to initialize camera scanner",
+            variant: "destructive",
+          })
+          setScanning(false)
+        }
       }
 
-      scannerRef.current = new Html5QrcodeScanner("qr-reader", config, false)
-
-      scannerRef.current.render(
-        (decodedText) => {
-          handleScanSuccess(decodedText)
-        },
-        (error) => {
-          // Handle scan failure - we can ignore most errors as they're just failed attempts
-          console.log("Scan error:", error)
-        },
-      )
+      initializeScanner()
     }
 
     return () => {
@@ -54,7 +70,7 @@ export function QRCodeScanner() {
         scannerRef.current.clear().catch(console.error)
       }
     }
-  }, [scanning, handleScanSuccess])
+  }, [scanning])
 
   const handleScanSuccess = async (decodedText: string) => {
     try {
