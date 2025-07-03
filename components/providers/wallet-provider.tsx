@@ -73,12 +73,8 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   const connect = useCallback(async () => {
     if (address) return
     try {
-      console.log('Attempting to connect wallet...', { connectors: connectors.length })
       if (connectors.length > 0) {
         await connectAsync({ connector: connectors[0] })
-        console.log('Wallet connected successfully')
-      } else {
-        console.error('No connectors available')
       }
     } catch (err) {
       console.error("Wallet connect error:", err)
@@ -91,16 +87,13 @@ const WalletContextProvider: FC<{ children: ReactNode }> = ({ children }) => {
   }, [disconnectAsync])
 
   const ctxValue = useMemo<WalletContextType>(
-    () => {
-      console.log('WalletContext value:', { address, balance: balanceData?.formatted, isConnected: !!address })
-      return {
-        address: address ?? null,
-        balance: balanceData ? balanceData.formatted : null,
-        connect,
-        disconnect,
-        isConnected: !!address,
-      }
-    },
+    () => ({
+      address: address ?? null,
+      balance: balanceData ? balanceData.formatted : null,
+      connect,
+      disconnect,
+      isConnected: !!address,
+    }),
     [address, balanceData, connect, disconnect],
   )
 

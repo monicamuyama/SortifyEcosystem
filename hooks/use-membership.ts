@@ -36,7 +36,15 @@ export function useMembership() {
   }
 
   const purchaseMembership = async (tier: "basic" | "premium" | "enterprise") => {
-    if (!address || !membershipContractAddress) return
+    if (!address) {
+      setError("Please connect your wallet first")
+      return
+    }
+    
+    if (!membershipContractAddress) {
+      setError("Membership contract address not configured")
+      return
+    }
 
     setLoading(true)
     setError(null)

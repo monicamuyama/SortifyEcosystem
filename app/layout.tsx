@@ -6,8 +6,6 @@ import './globals.css';
 import { WalletProvider } from "@/components/providers/wallet-provider"
 import { NotificationsProvider } from "@/components/providers/notifications-provider"
 import { Header } from "@/components/layout/header"
-import { SimpleHeader } from "@/components/layout/simple-header"
-import { SafeHeader } from "@/components/layout/safe-header"
 import { Footer } from "@/components/layout/footer"
 import { Analytics } from "@/components/analytics"
 import { RegisterSW } from "./register-sw"
@@ -53,7 +51,7 @@ export default function RootLayout({
         <WalletProvider>
           <NotificationsProvider>
             <div className="flex min-h-screen flex-col">
-              <SimpleHeader />
+              <Header />
               <main className="flex-1">{children}</main>
               <Footer />
             </div>

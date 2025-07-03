@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { Recycle } from "lucide-react"
+import { WalletConnectButton } from "@/components/wallet/wallet-connect-button"
 
 export function SimpleHeader() {
   return (
@@ -13,8 +14,9 @@ export function SimpleHeader() {
             <span className="text-xl font-bold">Sortify - Simple Header</span>
           </Link>
         </div>
-        <div>
+        <div className="flex items-center gap-4">
           <span>Header is visible!</span>
+          <WalletConnectButton />
         </div>
       </div>
     </header>

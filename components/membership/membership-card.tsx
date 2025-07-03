@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge"
 import { Check, Crown, Star, Zap } from "lucide-react"
 import { MEMBERSHIP_TIERS } from "@/lib/unlock"
 import { useMembership } from "@/hooks/use-membership"
+import { useWallet } from "@/hooks/use-wallet"
 
 interface MembershipCardProps {
   tier: "basic" | "premium" | "enterprise"
@@ -13,7 +14,8 @@ interface MembershipCardProps {
 }
 
 export function MembershipCard({ tier, isCurrentTier = false }: MembershipCardProps) {
-  const { purchaseMembership, loading } = useMembership()
+  const { purchaseMembership, loading, error } = useMembership()
+  const { isConnected } = useWallet()
   const tierData = MEMBERSHIP_TIERS[tier.toUpperCase() as keyof typeof MEMBERSHIP_TIERS]
 
   const getIcon = () => {
@@ -68,13 +70,21 @@ export function MembershipCard({ tier, isCurrentTier = false }: MembershipCardPr
       </CardContent>
 
       <CardFooter className="relative">
+        {error && <p className="text-sm text-red-500 mb-2">{error}</p>}
         <Button
           className="w-full"
           onClick={() => purchaseMembership(tier)}
-          disabled={loading || isCurrentTier}
+          disabled={loading || isCurrentTier || !isConnected}
           variant={isCurrentTier ? "secondary" : "default"}
         >
-          {loading ? "Processing..." : isCurrentTier ? "Active" : `Get ${tierData.name}`}
+          {loading 
+            ? "Processing..." 
+            : !isConnected 
+            ? "Connect Wallet" 
+            : isCurrentTier 
+            ? "Active" 
+            : `Get ${tierData.name}`
+          }
         </Button>
       </CardFooter>
     </Card>
