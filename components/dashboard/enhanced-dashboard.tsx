@@ -4,9 +4,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useSortifyEcosystem } from "@/lib/hooks/use-sortify-ecosystem"
+import { useSortifyEcosystem, MembershipType } from "@/lib/hooks/use-sortify-ecosystem"
 import { useRecyclingBadges } from "@/lib/hooks/use-recycling-badges"
 import { useAccount } from "wagmi"
+import { useWallet } from "@/hooks/use-wallet"
+import { parseEther } from "viem"
+import { useState } from "react"
 import { Wallet, Recycle, Award, TrendingUp, Users, Truck } from "lucide-react"
 
 export function EnhancedDashboard() {
@@ -278,6 +281,55 @@ function MembershipCard({
   isActive: boolean
   price: string
 }) {
+  const { purchaseMembership, isSubmitting } = useSortifyEcosystem()
+  const { isConnected } = useWallet()
+  const [purchasing, setPurchasing] = useState(false)
+
+  const getMembershipType = () => {
+    switch (title.toLowerCase()) {
+      case "collector":
+        return MembershipType.COLLECTOR
+      case "recycler":
+        return MembershipType.RECYCLER
+      case "verifier":
+        return MembershipType.VERIFIER
+      default:
+        return MembershipType.COLLECTOR
+    }
+  }
+
+  const getMembershipValue = () => {
+    switch (title.toLowerCase()) {
+      case "collector":
+        return parseEther("0.01") // 0.01 ETH
+      case "recycler":
+        return parseEther("0.02") // 0.02 ETH  
+      case "verifier":
+        return parseEther("0.05") // 0.05 ETH
+      default:
+        return parseEther("0.01")
+    }
+  }
+
+  const handlePurchase = async () => {
+    if (!isConnected) return
+    
+    try {
+      setPurchasing(true)
+      const membershipType = getMembershipType()
+      const value = getMembershipValue()
+      
+      await purchaseMembership(membershipType, value)
+      
+      // Success feedback could be added here
+    } catch (error) {
+      console.error("Error purchasing membership:", error)
+      // Error handling could be added here
+    } finally {
+      setPurchasing(false)
+    }
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -290,7 +342,13 @@ function MembershipCard({
           {isActive ? (
             <Badge className="w-full justify-center">Active</Badge>
           ) : (
-            <Button className="w-full">Purchase</Button>
+            <Button 
+              className="w-full" 
+              onClick={handlePurchase}
+              disabled={purchasing || isSubmitting || !isConnected}
+            >
+              {purchasing ? "Processing..." : !isConnected ? "Connect Wallet" : "Purchase"}
+            </Button>
           )}
         </div>
       </CardContent>
