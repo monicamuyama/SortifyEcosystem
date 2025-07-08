@@ -7,11 +7,19 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { SmartBinMap } from "@/components/smart-bins/smart-bin-map"
+import dynamic from 'next/dynamic'
 import { SmartBinStatus } from "@/components/smart-bins/smart-bin-status"
 import { SmartBinStats } from "@/components/smart-bins/smart-bin-stats"
 import { SmartBinTechnology } from "@/components/smart-bins/smart-bin-technology"
 import { MapPin, Search, Filter, Info } from "lucide-react"
+
+const SmartBinMap = dynamic(
+  () => import('@/components/smart-bins/smart-bin-map').then(mod => ({ default: mod.SmartBinMap })),
+  { 
+    ssr: false,
+    loading: () => <div className="h-96 bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading map...</div>
+  }
+)
 
 export default function SmartBinsPage() {
   const [searchQuery, setSearchQuery] = useState("")

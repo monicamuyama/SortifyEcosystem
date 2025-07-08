@@ -8,8 +8,16 @@ import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { ChevronDown, Users, Truck, BarChart3, AreaChart, Clock } from "lucide-react"
 import { AdminSidebar } from "@/components/admin/admin-sidebar"
-import { RouteOptimizationMap } from "@/components/admin/route-optimization-map"
+import dynamic from 'next/dynamic'
 import { SidebarProvider } from "@/components/ui/sidebar"
+
+const RouteOptimizationMap = dynamic(
+  () => import('@/components/admin/route-optimization-map').then(mod => ({ default: mod.RouteOptimizationMap })),
+  { 
+    ssr: false,
+    loading: () => <div className="h-[300px] bg-gray-100 animate-pulse rounded-lg flex items-center justify-center">Loading map...</div>
+  }
+)
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState("dashboard")

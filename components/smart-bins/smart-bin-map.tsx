@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState, useMemo } from "react"
 import { Button } from "@/components/ui/button"
 import { Loader2, Locate, RotateCcw } from "lucide-react"
+import L, { Map as LeafletMap } from "leaflet"
 
 interface SmartBinMapProps {
   searchQuery?: string
@@ -12,7 +13,7 @@ interface SmartBinMapProps {
 
 export function SmartBinMap({ searchQuery, selectedArea, selectedStatus }: SmartBinMapProps) {
   const mapRef = useRef<HTMLDivElement>(null)
-  const mapInstanceRef = useRef<L.Map | null>(null)
+  const mapInstanceRef = useRef<LeafletMap | null>(null)
   const markerRefs = useRef<L.Marker[]>([])
   const [loading, setLoading] = useState(true)
 
