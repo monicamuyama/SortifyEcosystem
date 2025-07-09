@@ -1,4 +1,26 @@
 export const SORTIFY_ECOSYSTEM_ABI = [
+    // Lock Address Getters
+    {
+      inputs: [],
+      name: "collectorLock",
+      outputs: [{ name: "", type: "address" }],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "recyclerLock",
+      outputs: [{ name: "", type: "address" }],
+      stateMutability: "view",
+      type: "function",
+    },
+    {
+      inputs: [],
+      name: "verifierLock",
+      outputs: [{ name: "", type: "address" }],
+      stateMutability: "view",
+      type: "function",
+    },
     // Collection Request Functions
     {
       inputs: [

@@ -4,11 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { useSortifyEcosystem, MembershipType } from "@/lib/hooks/use-sortify-ecosystem"
+import { useSortifyEcosystem } from "@/lib/hooks/use-sortify-ecosystem"
 import { useRecyclingBadges } from "@/lib/hooks/use-recycling-badges"
+import { useUnlockMembership, MembershipType } from "@/hooks/use-unlock-membership"
 import { useAccount } from "wagmi"
 import { useWallet } from "@/hooks/use-wallet"
-import { parseEther } from "viem"
 import { useState } from "react"
 import { Wallet, Recycle, Award, TrendingUp, Users, Truck } from "lucide-react"
 
@@ -26,6 +26,11 @@ export function EnhancedDashboard() {
   } = useSortifyEcosystem()
 
   const { badgeCount } = useRecyclingBadges()
+  const { 
+    isCollector, 
+    isRecycler, 
+    isVerifier
+  } = useUnlockMembership()
 
   if (!isConnected) {
     return (
@@ -51,12 +56,11 @@ export function EnhancedDashboard() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
           <p className="text-muted-foreground">Welcome back to your Sortify dashboard</p>
-        </div>
-        <div className="flex items-center gap-2">
-          {userProfile?.isCollector && <Badge variant="default">Collector</Badge>}
-          {userProfile?.isRecycler && <Badge variant="secondary">Recycler</Badge>}
-          {userProfile?.isVerifier && <Badge variant="outline">Verifier</Badge>}
-        </div>
+        </div>          <div className="flex items-center gap-2">
+            {isCollector && <Badge variant="default">Collector</Badge>}
+            {isRecycler && <Badge variant="secondary">Recycler</Badge>}
+            {isVerifier && <Badge variant="outline">Verifier</Badge>}
+          </div>
       </div>
 
       {/* Stats Overview */}
@@ -231,21 +235,24 @@ export function EnhancedDashboard() {
             <CardContent>
               <div className="grid gap-4 md:grid-cols-3">
                 <MembershipCard
+                  membershipType={MembershipType.COLLECTOR}
                   title="Collector"
                   description="Accept and complete waste collection requests"
-                  isActive={userProfile?.isCollector || false}
+                  isActive={isCollector}
                   price="0.01 ETH"
                 />
                 <MembershipCard
+                  membershipType={MembershipType.RECYCLER}
                   title="Recycler"
                   description="List processed materials on the marketplace"
-                  isActive={userProfile?.isRecycler || false}
+                  isActive={isRecycler}
                   price="0.02 ETH"
                 />
                 <MembershipCard
+                  membershipType={MembershipType.VERIFIER}
                   title="Verifier"
                   description="Verify waste collections and earn rewards"
-                  isActive={userProfile?.isVerifier || false}
+                  isActive={isVerifier}
                   price="0.05 ETH"
                 />
               </div>
@@ -271,53 +278,28 @@ function CollectionRequestCard({ requestId }: { requestId: bigint }) {
 }
 
 function MembershipCard({
+  membershipType,
   title,
   description,
   isActive,
   price,
 }: {
+  membershipType: MembershipType
   title: string
   description: string
   isActive: boolean
   price: string
 }) {
-  const { purchaseMembership, isSubmitting } = useSortifyEcosystem()
+  const { purchaseMembership, getMembershipPrice, isSubmitting, isConfirming, error } = useUnlockMembership()
   const { isConnected } = useWallet()
   const [purchasing, setPurchasing] = useState(false)
-
-  const getMembershipType = () => {
-    switch (title.toLowerCase()) {
-      case "collector":
-        return MembershipType.COLLECTOR
-      case "recycler":
-        return MembershipType.RECYCLER
-      case "verifier":
-        return MembershipType.VERIFIER
-      default:
-        return MembershipType.COLLECTOR
-    }
-  }
-
-  const getMembershipValue = () => {
-    switch (title.toLowerCase()) {
-      case "collector":
-        return parseEther("0.01") // 0.01 ETH
-      case "recycler":
-        return parseEther("0.02") // 0.02 ETH  
-      case "verifier":
-        return parseEther("0.05") // 0.05 ETH
-      default:
-        return parseEther("0.01")
-    }
-  }
 
   const handlePurchase = async () => {
     if (!isConnected) return
     
     try {
       setPurchasing(true)
-      const membershipType = getMembershipType()
-      const value = getMembershipValue()
+      const value = getMembershipPrice(membershipType)
       
       await purchaseMembership(membershipType, value)
       
@@ -329,6 +311,8 @@ function MembershipCard({
       setPurchasing(false)
     }
   }
+
+  const isLoading = purchasing || isSubmitting || isConfirming
 
   return (
     <Card>
@@ -345,10 +329,15 @@ function MembershipCard({
             <Button 
               className="w-full" 
               onClick={handlePurchase}
-              disabled={purchasing || isSubmitting || !isConnected}
+              disabled={isLoading || !isConnected}
             >
-              {purchasing ? "Processing..." : !isConnected ? "Connect Wallet" : "Purchase"}
+              {isLoading ? "Processing..." : !isConnected ? "Connect Wallet" : "Purchase"}
             </Button>
+          )}
+          {error && (
+            <p className="text-sm text-red-500 text-center">
+              {error.message || "Error purchasing membership"}
+            </p>
           )}
         </div>
       </CardContent>
